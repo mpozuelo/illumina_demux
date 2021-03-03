@@ -65,6 +65,9 @@ custom_runName = workflow.runName
 
 run = params.run
 sequencer = params.sequencer
+cluster_path = params.cluster_path
+
+
 runDir = file("${cluster_path}/data/01_bcl/Illumina/$sequencer/$run", checkIfExists: true)
 ch_samples_info = file("${runDir}/SampleSheet.csv", checkIfExists: true)
 
