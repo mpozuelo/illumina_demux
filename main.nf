@@ -263,7 +263,7 @@ process demux {
     -l INFO >> $info
   """
 }
-
+/*
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
 Channel
   .from( ch_samples_info )
@@ -278,7 +278,7 @@ ch_fastqc_all = ch_fastqc_all.mix(fqname_fqfile_ch, ch_project)
 /*
  * FastQC
  */
-
+/*
  if (!params.skipQC || !params.skipFastQC) {
 
    process fastqc {
