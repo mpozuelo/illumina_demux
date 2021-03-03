@@ -164,8 +164,8 @@ process parse_samplesheet {
   path samplesheet from ch_samplesheet
 
   output:
-  path "samplesheet_demux*"
-  path "SampleSheet.csv" into ch_samplesheet_bcl2fastq2
+  path "samplesheet_demux*" into ch_samples_info
+  //path "SampleSheet.csv" into ch_samplesheet_bcl2fastq2
   path ("*.txt") into ch_demux_parameters
 
   script:
@@ -198,13 +198,14 @@ process parse_samplesheet {
 13- Coverage
 */
 
-
-/*Channel
+/*
+Channel
   .from( ch_samples_info )
   .splitCsv(header:false, sep:',')
   .map { it = ["${it[1]}", "${it[9]}", "${it[11]}",
   ]}
   .set { ch_fastqc }
+  */
 
 
 
@@ -226,7 +227,7 @@ process demux {
   */
 
   input:
-  path samplesheet from ch_samples_info
+  path samplesheet from ch_samplesheet
   path(cycles) from ch_demux_parameters
 
   output:
@@ -264,7 +265,12 @@ process demux {
 }
 
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
-ch_project = ch_samples_info.map { fqFile -> ["${fqFile[1]}", "${fqFile[4]}" ] }
+Channel
+  .from( ch_samples_info )
+  .splitCsv(header:false, sep:',')
+  .map { fqFile -> ["${fqFile[1]}", "${fqFile[4]}" ] }
+  .set { ch_project }
+//h_project = ch_samplesheet.map { fqFile -> ["${fqFile[1]}", "${fqFile[4]}" ] }
 ch_fastqc_all = Channel.empty()
 ch_fastqc_all = ch_fastqc_all.mix(fqname_fqfile_ch, ch_project)
 
