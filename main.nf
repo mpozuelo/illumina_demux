@@ -65,6 +65,8 @@ custom_runName = workflow.runName
 
 run = params.run
 sequencer = params.sequencer
+runDir = file("${cluster_path}/data/01_bcl/Illumina/$sequencer/$run", checkIfExists: true)
+ch_samples_info = file("${runDir}/SampleSheet.csv", checkIfExists: true)
 
 // Validate inputs
 cluster_path = params.cluster_path
@@ -242,16 +244,18 @@ process demux {
   let minlength=\$cycles1 - \$cycles2
   let short_adapter_read=\$cycles2 - 1
 
-  bcl2fastq --output-dir  ./  \
-    --use-bases-mask \$bases_mask \
-    --sample-sheet $samplesheet \
-    --minimum-trimmed-read-length \$minlength \
-    --mask-short-adapter-read \$short_adapter_read \
-    --no-lane-splitting \
-    --barcode-mismatches 0 \
-    -r 8 \
-    -p 10 \
-    -w 10 \
+  bcl2fastq \\
+    --runfolder-dir ${runDir} \\
+    --output-dir  ./  \\
+    --use-bases-mask \$bases_mask \\
+    --sample-sheet $samplesheet \\
+    --minimum-trimmed-read-length \$minlength \\
+    --mask-short-adapter-read \$short_adapter_read \\
+    --no-lane-splitting \\
+    --barcode-mismatches 0 \\
+    -r 8 \\
+    -p 10 \\
+    -w 10 \\
     -l INFO >> $info
   """
 }
