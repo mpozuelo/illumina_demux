@@ -1,0 +1,15 @@
+# You can use this file to create a conda environment for this pipeline:
+#   conda env create -f environment.yml
+name: mpozuelo-illumina_demux-1.0
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+
+dependencies:
+  ##conda forge packages
+  - conda-forge::python=3.6.10
+
+  ##bioconda packages
+  - bioconda::fastqc=0.11.9
+  - bioconda::bcl2fastq2=2.20.0.422
