@@ -219,7 +219,7 @@ process parse_samplesheet {
 process demux {
   tag "$run"
   label 'process_high'
-  publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy',
+  publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy'
   /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
   }
