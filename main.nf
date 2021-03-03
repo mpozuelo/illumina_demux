@@ -194,12 +194,13 @@ process parse_samplesheet {
 */
 
 
-Channel
+/*Channel
   .from( ch_samples_info )
   .splitCsv(header:false, sep:',')
   .map { it = ["${it[1]}", "${it[9]}", "${it[11]}",
   ]}
   .set { ch_fastqc }
+
 
 
 /*
@@ -214,9 +215,10 @@ process demux {
   tag "$run"
   label 'process_high'
   publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy',
-  saveAs: { filename ->
+  /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
   }
+  */
 
   input:
   path samplesheet from ch_samples_info
@@ -255,7 +257,9 @@ process demux {
 }
 
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
-
+ch_project = ch_samples_info.map { fqFile -> ["${fqFile[1]}", "${fqFile[4]}" ] }
+ch_fastqc_all = Channel.empty()
+ch_fastqc_all = ch_fastqc_all.mix(fqname_fqfile_ch, ch_project)
 
 
 /*
@@ -267,13 +271,13 @@ fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFi
    process fastqc {
      tag "$sample"
      label 'process_medium'
-     publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/fastqc", mode: 'copy',
+     publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/${project}/fastqc", mode: 'copy',
      saveAs: { filename ->
        filename.endsWith(".zip") ? "zips/$filename" : filename
      }
 
      input:
-     set path(reads) from fqname_fqfile_ch
+     set val(project), path(reads) from ch_fastqc_all
 
      output:
      path("*_fastqc.{zip,html}")
