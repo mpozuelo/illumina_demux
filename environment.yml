@@ -12,4 +12,5 @@ dependencies:
 
   ##bioconda packages
   - bioconda::fastqc=0.11.9
-  - bioconda::bcl2fastq2=2.20.0.422
+
+  - bcl2fastq2=2.19.0
