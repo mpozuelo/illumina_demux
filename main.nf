@@ -256,7 +256,7 @@ process demux {
     --minimum-trimmed-read-length \$minlength \\
     --mask-short-adapter-read \$short_adapter_read \\
     --no-lane-splitting \\
-    --barcode-mismatches 0 \\
+    --barcode-mismatches 1 \\
     -r 8 \\
     -p 10 \\
     -w 10 \\
