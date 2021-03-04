@@ -218,6 +218,7 @@ Channel
 */
 
 process demux {
+  container 'mpozuelo/cellranger:bcl2fastq'
   tag "$run"
   label 'process_high'
   publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy'
