@@ -141,7 +141,6 @@ process get_software_versions {
     echo $workflow.manifest.version &> v_ngi_rnaseq.txt
     echo $workflow.nextflow.version &> v_nextflow.txt
     fastqc --version &> v_fastqc.txt
-    bcl2fastq --version &> v_bcl2fastq2.txt
     scrape_software_versions.py &> software_versions_mqc.yaml
     """
 }
