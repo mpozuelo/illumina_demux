@@ -240,10 +240,10 @@ process demux {
   info = "${run}.dmux.log 2>&1"
 
   """
-  cycles1=\$(cat cycles[0])
-  cycles2=\$(cat cycles[1])
-  cycles3=\$(cat cycles[2])
-  cycles4=\$(cat cycles[3])
+  cycles1=\$(cat ${cycles[0]})
+  cycles2=\$(cat ${cycles[1]})
+  cycles3=\$(cat ${cycles[2]})
+  cycles4=\$(cat ${cycles[3]})
   bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
   let minlength=\$cycles1 - \$cycles2
   let short_adapter_read=\$cycles2 - 1
