@@ -234,7 +234,7 @@ process demux {
   file "*.fastq.gz" into ch_fastqc
   file "Reports"
   file "Stats"
-  file ".log"
+  file "*.log"
 
   script:
   info = "${run}.dmux.log 2>&1"
