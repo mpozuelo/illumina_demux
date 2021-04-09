@@ -220,7 +220,7 @@ process demux {
   container 'mpozuelo/illuminademux:bcl2fastq'
   tag "$run"
   label 'process_high'
-  publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy'
+  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy'
   /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
   }
