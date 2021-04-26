@@ -154,7 +154,7 @@ Also get information about the cycles for the demultiplexing
 process parse_samplesheet {
   tag "$samplesheet"
   label 'process_low'
-  publishDir "${cluster_path}/03_intermediate/Illumina/${sequencer}/${run}/SampleSheet/", mode: 'copy',
+  publishDir "${cluster_path}/data/03_intermediate/Illumina/${sequencer}/${run}/SampleSheet/", mode: 'copy',
   saveAs: { filename ->
     filename.startsWith("samplesheet_demux") ? filename : null
   }
@@ -220,7 +220,7 @@ process demux {
   container 'mpozuelo/illuminademux:bcl2fastq'
   tag "$run"
   label 'process_high'
-  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/demux_fastq", mode: 'copy'
+  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/", mode: 'copy'
   /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
   }
@@ -284,13 +284,13 @@ ch_fastqc_all = ch_fastqc_all.mix(fqname_fqfile_ch, ch_project)
    process fastqc {
      tag "$sample"
      label 'process_medium'
-     publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/${project}/fastqc", mode: 'copy',
+     publishDir "${cluster_path}/data/04_rfastq/Illumina/${sequencer}/${run}/", mode: 'copy',
      saveAs: { filename ->
-       filename.endsWith(".zip") ? "zips/$filename" : filename
+       filename.endsWith(".zip") ? "zips/$filename" : "html/$filename"
      }
 
      input:
-     set val(project), path(reads) from ch_fastqc_all
+     set path(reads) from ch_fastqc
 
      output:
      path("*_fastqc.{zip,html}")
