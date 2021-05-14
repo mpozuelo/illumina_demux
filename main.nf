@@ -230,8 +230,8 @@ process demux {
   */
 
   input:
-  path samplesheet from ch_samplesheet
-  path(cycles) from ch_demux_parameters
+  file samplesheet from ch_samplesheet
+  file(cycles) from ch_demux_parameters
 
   output:
   file "*.fastq.gz" into ch_fastqc
