@@ -222,7 +222,7 @@ process demux {
   container 'mpozuelo/illuminademux:bcl2fastq'
   tag "$run"
   label 'process_high'
-  publishDir "${runDir}/04_pfastq/", mode: 'copy',
+  publishDir "${runDir}/04_pfastq/", mode: 'copy'
 //  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/", mode: 'copy'
   /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
@@ -230,8 +230,8 @@ process demux {
   */
 
   input:
-  file samplesheet from ch_samplesheet
-  file(cycles) from ch_demux_parameters
+  path samplesheet from ch_samplesheet
+  path(cycles) from ch_demux_parameters
 
   output:
   file "*.fastq.gz" into ch_fastqc
