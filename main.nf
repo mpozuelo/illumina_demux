@@ -68,7 +68,8 @@ sequencer = params.sequencer
 cluster_path = params.cluster_path
 
 
-runDir = file("${cluster_path}/data/01_bcl/Illumina/$sequencer/$run", checkIfExists: true)
+//runDir = file("${cluster_path}/data/01_bcl/Illumina/$sequencer/$run", checkIfExists: true)
+runDir = file("/home/mpozuelor/$run", checkIfExists: true)
 ch_samplesheet = file("${runDir}/SampleSheet.csv", checkIfExists: true)
 
 // Validate inputs
@@ -154,7 +155,8 @@ Also get information about the cycles for the demultiplexing
 process parse_samplesheet {
   tag "$samplesheet"
   label 'process_low'
-  publishDir "${cluster_path}/data/03_intermediate/Illumina/${sequencer}/${run}/SampleSheet/", mode: 'copy',
+  publishDir "${runDir}/03_intermediate/SampleSheet/", mode: 'copy',
+//  publishDir "${cluster_path}/data/03_intermediate/Illumina/${sequencer}/${run}/SampleSheet/", mode: 'copy',
   saveAs: { filename ->
     filename.startsWith("samplesheet_demux") ? filename : null
   }
@@ -220,7 +222,8 @@ process demux {
   container 'mpozuelo/illuminademux:bcl2fastq'
   tag "$run"
   label 'process_high'
-  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/", mode: 'copy'
+  publishDir "${runDir}/04_pfastq/", mode: 'copy',
+//  publishDir "${cluster_path}/data/04_pfastq/Illumina/${sequencer}/${run}/", mode: 'copy'
   /*saveAs: { filename ->
     filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
   }
