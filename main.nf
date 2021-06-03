@@ -242,7 +242,7 @@ process demux {
   cycles1=\$(cat ${cycles[0]})
   cycles2=\$(cat ${cycles[1]})
   cycles3=\$(cat ${cycles[2]})
-  bases_mask=\$(printf \"Y%s,I8,I7Y8\" "\$cycles1")
+  bases_mask=\$(printf "Y%s,I8,I7Y8" "\$cycles1")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
 
@@ -251,8 +251,6 @@ process demux {
     --output-dir  ./  \\
     --use-bases-mask \$bases_mask \\
     --sample-sheet $samplesheet \\
-    --minimum-trimmed-read-length \$minlength \\
-    --mask-short-adapter-read \$short_adapter_read \\
     --no-lane-splitting \\
     --barcode-mismatches 1 \\
     -r 8 \\
@@ -261,6 +259,8 @@ process demux {
     -l INFO >> $info
   """
 }
+//    --minimum-trimmed-read-length \$minlength \\
+//    --mask-short-adapter-read \$short_adapter_read \\
 /*
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
 Channel
