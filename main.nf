@@ -252,7 +252,7 @@ process demux {
     --use-bases-mask \$bases_mask \\
     --sample-sheet $samplesheet \\
     --no-lane-splitting \\
-    --barcode-mismatches 1 \\
+    --barcode-mismatches 0 \\
     -r 8 \\
     -p 10 \\
     -w 10 \\
