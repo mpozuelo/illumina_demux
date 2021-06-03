@@ -228,9 +228,10 @@ process demux {
   input:
   path samplesheet from ch_samplesheet
   path(cycles) from ch_demux_parameters
+  path sheet from ch_samples_info
 
   output:
-  file "*.fastq.gz" into ch_fastqc
+  file "*/*/*.fastq.gz" into ch_fastqc
   file "Reports"
   file "Stats"
   file "*.log"
@@ -257,6 +258,19 @@ process demux {
     -p 10 \\
     -w 10 \\
     -l INFO >> $info
+
+  for user in $(cut -f12 $sheet | sort -u)
+  do
+  mkdir -p \${user}}/demux_fastq
+  done
+
+  while read sid s i7 i5 pr sp lb r m pl d u c;
+  do
+  sample=\$sid
+  user=\$u
+  mv \${sample}_* \${user}}/demux_fastq
+  done < $sheet
+
   """
 }
 //    --minimum-trimmed-read-length \$minlength \\
