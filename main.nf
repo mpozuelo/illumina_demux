@@ -231,7 +231,7 @@ process demux {
   path sheet from ch_samples_info
 
   output:
-  file "*/*/*.fastq.gz" into ch_fastqc
+  file "*/demux_fastq/*.fastq.gz" into ch_fastqc
   file "Reports"
   file "Stats"
   file "*.log"
