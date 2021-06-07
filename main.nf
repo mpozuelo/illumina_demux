@@ -249,6 +249,7 @@ process demux {
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
     --output-dir  ./  \\
+    --mask-short-adapter-read 0 \\
     --use-bases-mask \$bases_mask \\
     --sample-sheet $samplesheet \\
     --no-lane-splitting \\
