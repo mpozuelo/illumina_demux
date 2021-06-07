@@ -242,7 +242,7 @@ process demux {
   cycles1=\$(cat ${cycles[0]})
   cycles2=\$(cat ${cycles[1]})
   cycles3=\$(cat ${cycles[2]})
-  bases_mask=\$(printf "Y%s,I8,Y8I7" "\$cycles1")
+  bases_mask=\$(printf "Y%s,I8,I7Y8" "\$cycles1")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
 
