@@ -252,6 +252,7 @@ process demux {
     --runfolder-dir ${runDir} \\
     --output-dir  ./  \\
     --use-bases-mask \$bases_mask \\
+    --create-fastq-for-index-reads \\
     --sample-sheet $samplesheet \\
     --minimum-trimmed-read-length \$minlength \\
     --mask-short-adapter-read \$short_adapter_read \\
