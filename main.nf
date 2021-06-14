@@ -245,7 +245,7 @@ process demux {
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
     --output-dir  ./  \\
-    --use-bases-mask 7 \\
+    --use-bases-mask $\bases_mask \\
     --create-fastq-for-index-reads \\
     --sample-sheet $samplesheet \\
     --minimum-trimmed-read-length 40 \\
