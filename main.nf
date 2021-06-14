@@ -249,7 +249,7 @@ process demux {
     --create-fastq-for-index-reads \\
     --sample-sheet $samplesheet \\
     --minimum-trimmed-read-length 40 \\
-    --mask-short-adapter-read \$short_adapter_read \\
+    --mask-short-adapter-read 0 \\
     --no-lane-splitting \\
     --barcode-mismatches 1 \\
     -r 8 \\
