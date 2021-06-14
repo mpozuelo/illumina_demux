@@ -241,8 +241,6 @@ process demux {
 
   """
   bases_mask=\$(printf "I8Y43,I8,I8,Y51")
-  let minlength=\$cycles1-\$cycles2
-  let short_adapter_read=\$cycles2-1
 
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
@@ -261,6 +259,8 @@ process demux {
   """
 }
 /*
+let minlength=\$cycles1-\$cycles2
+let short_adapter_read=\$cycles2-1
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
 Channel
   .from( ch_samples_info )
