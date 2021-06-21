@@ -240,7 +240,7 @@ process demux {
   info = "${run}.dmux.log 2>&1"
 
   """
-  bases_mask=\$(printf "I8Y43,N8,N8,Y51")
+  bases_mask=\$(printf "I8Y43,I8,N8,Y51")
 
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
