@@ -70,6 +70,7 @@ cluster_path = params.cluster_path
 
 runDir = file("${cluster_path}/data/01_bcl/Illumina/$sequencer/$run", checkIfExists: true)
 ch_samplesheet = file("${runDir}/SampleSheet.csv", checkIfExists: true)
+protocol = params.protocol
 
 // Validate inputs
 cluster_path = params.cluster_path
@@ -244,9 +245,24 @@ process demux {
   cycles2=\$(cat ${cycles[1]})
   cycles3=\$(cat ${cycles[2]})
   cycles4=\$(cat ${cycles[3]})
+
+  if [ protocol == "" ]
+  then
   bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
+  elif [ protocol == "mcSCRBseq" ] 
+  then
+  let read1=\$cycles1-\$cycles2
+  bases_mask=\$(printf "I%sY%s,I%s,N%s,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
+  elif [ protocol == "marseq" ]
+  then
+  let i2=\$cycles3-\$cycles2
+  let read2=\$cycles3-\$i2
+  bases_mask=\$(printf "Y%s,I%s,I%sY%s" "\$cycles1" "\$cycles2" "\$i2" "\$read2")
+  fi
+
+
 
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
