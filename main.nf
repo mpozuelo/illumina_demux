@@ -95,7 +95,7 @@ summary['Technology'] = "Illumina"
 summary['Max Resources'] = "$params.max_memory memory, $params.max_cpus cpus, $params.max_time time per job"
 if (workflow.containerEngine) summary['Container'] = "$workflow.containerEngine - $workflow.container"
 summary['User'] = workflow.userName
-summary['Protocol'] = workflow.protocol
+summary['Protocol'] = params.protocol
 
 summary['Config Profile'] = workflow.profile
 if (params.config_profile_description) summary['Config Description'] = params.config_profile_description
