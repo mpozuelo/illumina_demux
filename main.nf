@@ -65,6 +65,7 @@ custom_runName = workflow.runName
 
 run = params.run
 sequencer = params.sequencer
+protocol = params.protocol
 cluster_path = params.cluster_path
 
 
@@ -179,6 +180,14 @@ process parse_samplesheet {
 }
 
 
+Channel
+  .from( ch_samplesheet )
+  .splitCsv(header:true, sep:',')
+  .map { it = ["${it[0]}", "${it[6]}", "${it[11]}"]}
+  .set { ch_sheet }
+
+
+
 /*
  * LOAD SAMPLESHEET and assign get the columns we will use for demultiplexing
  It contains the following columns:
@@ -232,7 +241,8 @@ process demux {
   path(cycles) from ch_demux_parameters
 
   output:
-  file "*.fastq.gz" into ch_fastqc
+  file "*R1_*.fastq.gz" into ch_R1
+  file "*R2_*.fastq.gz" into ch_R2
   file "Reports"
   file "Stats"
   file "*.log"
@@ -251,7 +261,7 @@ process demux {
   bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
-  elif [ protocol == "mcSCRBseq" ] 
+  elif [ protocol == "mcSCRBseq" ]
   then
   let read1=\$cycles1-\$cycles2
   bases_mask=\$(printf "I%sY%s,I%s,N%s,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
@@ -280,6 +290,133 @@ process demux {
     -l INFO >> $info
   """
 }
+
+
+Channel
+  .from( ch_R1 )
+  .map( it -> [ it.minus("_S[0-9]+_R1_001.fastq.gz") , it[0]] )
+  .set( ch_join_R1 )
+
+Channel
+  .from( ch_R2 )
+  .map( it -> [ it.minus("_S[0-9]+_R2_001.fastq.gz") , it[0]] )
+  .set( ch_join_R2 )
+
+
+ch_umi = ch_sheet
+  .join( ch_join_R1, remainder: true)
+  .join( ch_join_R2, remainder: true)
+
+
+/*
+process umi_removal {
+  tag "$sample"
+  label 'process_low'
+  publishDir "${cluster_path}/data/04_pfastq/${platform}/${run_id}/${lane}/${user}", mode: 'copy',
+  saveAs: { filename ->
+    filename.endsWith(".fastq.gz") ? filename : "logs/$filename"
+  }
+
+  input:
+  set val(sample), val(protocol), val(user), path(fastq1), path(fastq2) from ch_umi
+
+  output:
+  set val(sample), path("*fastq.gz") into
+
+  script:
+  if (protocol == "RNAseq_3_S" | protocol == "RNAseq_3_ULI"){
+    umi = "${sample}_umi.txt"
+    """
+    File_ID_new=\$(echo "${sample}" | rev | cut -c 3- | rev)
+    File_ID_number=\$(echo "${sample}" | rev | cut -c 1 | rev)
+    Lane_ID_number=\$(echo "${lane}" | rev | cut -c 1 | rev)
+    woumi1=\$(printf "%s_woUMI_S%s_L00%s_R1_001.fastq.gz" "\${File_ID_new}" "\${File_ID_number}" "\${Lane_ID_number}")
+    woumi2=\$(printf "%s_woUMI_S%s_L00%s_R2_001.fastq.gz" "\${File_ID_new}" "\${File_ID_number}" "\${Lane_ID_number}")
+    cutadapt -l 10 -j 0 -o $umi ${reads[0]}
+    umi_tools extract -I ${fastq1} -S \$woumi1 --read2-in=${fastq2} --read2-out=\$woumi2 --bc-pattern=NNNNNNNNNN
+    """
+  }
+}
+
+
+
+  /*
+  Generate UMI for 3'RNAseq'
+  */
+
+  /*process trimming {
+    tag "$sample"
+    label 'process_low'
+    publishDir "${cluster_path}/data/03_intermediate/${platform}/${run_id}/${lane}/", mode: 'copy',
+    saveAs: { filename ->
+      if (params.complete) {
+        if (filename.endsWith("UMI.fq.gz")) "4-Analysis/4.1-Trimming/${sample}/UMIs/$filename"
+        else if (filename.endsWith("cutadapt.QC.fq.gz")) "Analysis/4.1-Trimming/${sample}/$filename"
+        else if (filename.endsWith(".QC.fq.gz")) "Analysis/4.1-Trimming/${sample}/fastqSubset/$filename"
+        else null
+        } else {
+          if (filename.endsWith("UMI.fq.gz")) "4-QC/4.1-Trimming/${sample}/UMIs/$filename"
+          else if (filename.endsWith("cutadapt.QC.fq.gz")) "QC/4.1-Trimming/${sample}/$filename"
+          else if (filename.endsWith(".QC.fq.gz")) "QC/4.1-Trimming/${sample}/fastqSubset/$filename"
+          else null
+        }
+      }
+
+
+  input:
+  set val(sample), val(), val(), path(fastq1), path(fastq2) from ch_umi
+
+  output:
+  path("*UMI.fq.gz") optional true
+  set val(sample), path("*cutadapt*.fq.gz"), val(run_id), val(lane), val(date), val(protocol), val(platform), val(source), val(genome), val(user) into ch_trimmed
+  path("*.QC.fq.gz")
+  set val(sample), path(reads), val("*cutadapt*.fq.gz") into ch_stats2
+
+
+  script:
+  read1 = params.complete ? reads[0] : reads[0].minus(".fq.gz") + ".QC.fq.gz"
+  read2 = params.complete ? reads[1] : reads[1].minus(".fq.gz") + ".QC.fq.gz"
+  umi = "${sample}_${run_id}_${lane}_UMI.fq.gz"
+  trimmed1 = params.complete ? "${sample}_${run_id}_${lane}_R1.cutadapt.fq.gz" : "${sample}_${run_id}_${lane}_R1.cutadapt.QC.fq.gz"
+  trimmed1 = params.complete ? "${sample}_${run_id}_${lane}_R2.cutadapt.fq.gz" : "${sample}_${run_id}_${lane}_R2.cutadapt.QC.fq.gz"
+  //subset = """echo $(($(echo $(zcat ${reads[0]}|wc -l)/4|bc)*0.1)) | awk '{ print int($1) }'"""
+
+  /* Make a subset of the samples to have a first idea of the quality control to send to bioinformatics. If we want
+  make the complete alignment add the option complete and the next step will be skipped
+  */
+/*
+  if (!params.complete) {
+    """
+    subset=($(echo $(($(echo -e `zcat ${reads[0]} | awk 'NR % 4 == 2' - | wc -l`)*10/100))))
+    seqtk sample -s100 ${reads[0]} ${subset} > ${read1}
+    seqtk sample -s100 ${reads[1]} ${subset} > ${read2}
+    """
+  }
+  /* First create a file with the UMIs for RNAseq sequencing
+  then first remove UMI and 30nt (40nts total) at 5' of read1 remove polyT tail in read1 and nextera adaptor
+  then finally remove polyA tail in read2 and truseq adaptor, 18N accounts for 8nt BC+10nt UMI
+  */
+/*
+  if (protocol == "RNAseq_3_S") {
+  """
+  cutadapt -l 10 -o $umi $read1
+  cutadapt -u 40 -g "polyA_Tail=T{100}" --minimum-length 20 -a Nextera=CTGTCTCTTATACACATCT \
+    -A "polyA_Tail=A{100}" -A "TruSeq=N{18}AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT;min_overlap=25" -n 2 --pair-filter=any \
+    -o $trimmed1 -p $trimmed2 $read1 $read2
+  """
+  }
+  else {
+  """
+  cutadapt --minimum-length 20 -a "Nextera=CTGTCTCTTATACACATCT" -a "TruSeq=AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" \
+    -A "TruSeq=AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGT" -A "Nextera=CTGTCTCTTATACACATCT" -n 2 --pair-filter=any \
+    -o $trimmed1 $trimmed2 $read1 $read2
+  """
+  }
+  }
+
+
+
+
 /*
 fqname_fqfile_ch = ch_fastqc.map { fqFile -> [fqFile.getParent().getName(), fqFile ] }
 Channel
