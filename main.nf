@@ -302,7 +302,7 @@ Channel
   .map( it -> [ it.minus("_S[0-9]+_R2_001.fastq.gz") , it[0]] )
   .set( ch_join_R2 )
 
-
+/*
 ch_umi = ch_sheet
   .join( ch_join_R1, remainder: true)
   .join( ch_join_R2, remainder: true)
