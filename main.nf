@@ -179,7 +179,7 @@ process parse_samplesheet {
   """
 }
 
-
+/*
 Channel
   .from( ch_samplesheet )
   .splitCsv(header:true, sep:',')
