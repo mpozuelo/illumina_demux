@@ -266,21 +266,21 @@ process demux {
     let minlength=\$cycles1-\$cycles2
     let short_adapter_read=\$cycles2-1
     elif [ single_end="paired" ]
-    if [ protocol=="" ]
-    then
-    bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
-    let minlength=\$cycles1-\$cycles2
-    let short_adapter_read=\$cycles2-1
-    elif [ protocol=="mcSCRBseq" ]
-    then
-    let read1=\$cycles1-\$cycles2
-    bases_mask=\$(printf "I%sY%s,I%s,N%s,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
-    elif [ protocol=="marseq" ]
-    then
-    let i2=\$cycles3-\$cycles2
-    let read2=\$cycles3-\$i2
-    bases_mask=\$(printf "Y%s,I%s,I%sY%s" "\$cycles1" "\$cycles2" "\$i2" "\$read2")
-    fi
+      if [ protocol=="" ]
+      then
+      bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
+      let minlength=\$cycles1-\$cycles2
+      let short_adapter_read=\$cycles2-1
+      elif [ protocol=="mcSCRBseq" ]
+      then
+      let read1=\$cycles1-\$cycles2
+      bases_mask=\$(printf "I%sY%s,I%s,N%s,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
+      elif [ protocol=="marseq" ]
+      then
+      let i2=\$cycles3-\$cycles2
+      let read2=\$cycles3-\$i2
+      bases_mask=\$(printf "Y%s,I%s,I%sY%s" "\$cycles1" "\$cycles2" "\$i2" "\$read2")
+      fi
     fi
 
 
