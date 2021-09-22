@@ -261,7 +261,7 @@ process demux {
 
   if [ single_end=="single" ]
   then
-  bases_mask=\$(printf "Y%s,I%s,I%s" "\$cycles1" "\$cycles2" "\$cycles3")
+  bases_mask=\$(printf "Y%s,I%s,I%s,Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$cycles4")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
   elif [ single_end=="paired" ]
