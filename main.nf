@@ -293,7 +293,7 @@ fi
     --minimum-trimmed-read-length \$minlength \\
     --mask-short-adapter-read \$short_adapter_read \\
     --no-lane-splitting \\
-    --barcode-mismatches 1 \\
+    --barcode-mismatches 2 \\
     -r 12 \\
     -p 12 \\
     -w 12 \\
