@@ -252,6 +252,7 @@ process demux {
   script:
   info = "${run}.dmux.log 2>&1"
   single_end = params.single_end ? "single" : "paired"
+  mismatch=params.mismatch
 
   """
   cycles1=\$(cat ${cycles[0]})
@@ -293,7 +294,7 @@ fi
     --minimum-trimmed-read-length \$minlength \\
     --mask-short-adapter-read \$short_adapter_read \\
     --no-lane-splitting \\
-    --barcode-mismatches 2 \\
+    --barcode-mismatches 1 \\
     -r 12 \\
     -p 12 \\
     -w 12 \\
