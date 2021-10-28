@@ -150,7 +150,7 @@ process get_software_versions {
 Get the ONLY the samplesheet for getting information per sample for the Trimming
 Also get information about the cycles for the demultiplexing
 */
-/*
+
 process parse_samplesheet {
   tag "$samplesheet"
   label 'process_low'
@@ -197,14 +197,14 @@ process parse_samplesheet {
 13- Coverage
 */
 
-/*
-Channel
+
+/*Channel
   .from( ch_samples_info )
   .splitCsv(header:false, sep:',')
   .map { it = ["${it[1]}", "${it[9]}", "${it[11]}",
   ]}
   .set { ch_fastqc }
-  */
+
 
 
 
@@ -228,7 +228,7 @@ process demux {
 
   input:
   path samplesheet from ch_samplesheet
-  //path(cycles) from ch_demux_parameters
+  path(cycles) from ch_demux_parameters
 
   output:
   file "*.fastq.gz" into ch_fastqc
@@ -240,7 +240,14 @@ process demux {
   info = "${run}.dmux.log 2>&1"
 
   """
-  bases_mask=\$(printf "I8Y43,I8,N8,Y51")
+
+  cycles1=\$(cat ${cycles[0]})
+  cycles2=\$(cat ${cycles[1]})
+  cycles3=\$(cat ${cycles[2]})
+  cycles4=\$(cat ${cycles[3]})
+
+  let read1=\$cycles1-\$cycles2
+  bases_mask=\$(printf "I%sY%s,I%s,N8,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
 
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
