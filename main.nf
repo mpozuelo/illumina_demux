@@ -246,8 +246,8 @@ process demux {
   cycles3=\$(cat ${cycles[2]})
   cycles4=\$(cat ${cycles[3]})
 
-  let read1=\$cycles1-\$cycles2
-  bases_mask=\$(printf "I%sY%s,I%s,Y%s,Y%s" "\$cycles2" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
+  let read1=\$cycles1-8
+  bases_mask=\$(printf "I8Y%s,I%s,Y%s,Y%s" "\$read1" "\$cycles2" "\$cycles3" "\$cycles4")
 
   bcl2fastq \\
     --runfolder-dir ${runDir} \\
