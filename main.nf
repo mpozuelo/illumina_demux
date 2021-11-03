@@ -172,6 +172,7 @@ process parse_samplesheet {
   echo \$(grep -A 1 'Reads' SampleSheet.csv | tail -n 1 | tr -dc '0-9') > cycles1.txt
   echo \$(grep -A 2 'Reads' SampleSheet.csv | tail -n 1 | tr -dc '0-9') > cycles2.txt
   echo \$(grep -A 3 'Reads' SampleSheet.csv | tail -n 1 | tr -dc '0-9') > cycles3.txt
+  echo \$(grep -A 4 'Reads' SampleSheet.csv | tail -n 1 | tr -dc '0-9') > cycles4.txt
   grep -A 99999999999 'Data' SampleSheet.csv | grep -v Data > samplesheet_demux_run${run}.csv
   """
 }
@@ -242,7 +243,11 @@ process demux {
   cycles1=\$(cat ${cycles[0]})
   cycles2=\$(cat ${cycles[1]})
   cycles3=\$(cat ${cycles[2]})
-  bases_mask=\$(printf "Y%s,I8,I7Y8" "\$cycles1")
+  cycles4=\$(cat ${cycles[3]})
+
+  let read2=\$cycles1-7
+
+  bases_mask=\$(printf "Y%s,I%s,N%s,I7Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$read2")
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
 
