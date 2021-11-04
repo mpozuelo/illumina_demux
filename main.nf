@@ -248,7 +248,7 @@ process demux {
   let read2=\$cycles1-7
 
   bases_mask=\$(printf "Y%s,I%s,N%s,I7Y%s" "\$cycles1" "\$cycles2" "\$cycles3" "\$read2")
-  bases_mask="Y101,I10,N10,I7Y8N86"
+  bases_mask="Y101,I10,N10,I7Y94"
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
 
