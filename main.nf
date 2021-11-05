@@ -260,9 +260,9 @@ process demux {
     --sample-sheet $samplesheet \\
     --no-lane-splitting \\
     --barcode-mismatches 0 \\
-    -r 8 \\
-    -p 10 \\
-    -w 10 \\
+    -r 30 \\
+    -p 30 \\
+    -w 30 \\
     -l INFO >> $info
   """
 }
