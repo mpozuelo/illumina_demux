@@ -252,6 +252,7 @@ process demux {
   let short_adapter_read=\$cycles2-1
 
   bcl2fastq \\
+    --create-fastq-for-index-reads \\
     --runfolder-dir ${runDir} \\
     --output-dir  ./  \\
     --mask-short-adapter-read 0 \\
