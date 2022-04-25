@@ -238,6 +238,7 @@ process demux {
 
   script:
   info = "${run}.dmux.log 2>&1"
+  //  bases_mask="Y101,I10,Y10,I7Y8N86"
 
   """
   cycles1=\$(cat ${cycles[0]})
@@ -247,7 +248,6 @@ process demux {
   let read2=\$cycles3-7
 
   bases_mask=\$(printf "Y%s,I%s,I7Y%s" "\$cycles1" "\$cycles2" "\$read2")
-  //  bases_mask="Y101,I10,Y10,I7Y8N86"
   let minlength=\$cycles1-\$cycles2
   let short_adapter_read=\$cycles2-1
 
