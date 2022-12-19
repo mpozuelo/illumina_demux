@@ -294,7 +294,7 @@ fi
     --minimum-trimmed-read-length \$minlength \\
     --mask-short-adapter-read \$short_adapter_read \\
     --no-lane-splitting \\
-    --barcode-mismatches 0 \\
+    --barcode-mismatches 1 \\
     -r 12 \\
     -p 12 \\
     -w 12 \\
